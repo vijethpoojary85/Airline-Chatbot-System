@@ -64,6 +64,9 @@ def run_agent_turn(runner, user_id, session_id, message_text):
                 elif part.function_response:
                     print(f"    [Tool Response: {str(part.function_response.response)[:80]}...]")
                     
+    # Sleep 12 seconds to prevent rate limit (Free tier limit is 5 RPM)
+    print("    [Rate limit mitigation: sleeping 12s...]")
+    time.sleep(12)
     return "\n".join(accumulated_text).strip()
 
 def reset_mock_data():

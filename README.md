@@ -88,17 +88,41 @@ GEMINI_API_KEY=your_actual_gemini_api_key_here
 
 ## Running the Application
 
-Start the assistant with:
+### Option A: Standard Interactive Chat (Terminal)
+Run the application directly using the virtual environment's Python executable. This starts the mock API in the background automatically:
 
 ```bash
-python main.py
+.\venv\Scripts\python.exe main.py
 ```
 
-This command will:
+---
 
-- load `.env`
-- launch the mock API backend on `http://127.0.0.1:8000`
-- start the interactive chat session
+### Option B: Running with Google ADK
+
+Since the ADK CLI requires folder names to be valid Python identifiers (no spaces), a wrapper folder `airline_agent` has been created. 
+
+Always run these commands from the **project root directory** and prefix them with the virtual environment path to ensure all dependencies (like `sentence-transformers`) load correctly.
+
+#### 1. Start the Mock API Backend (Terminal 1)
+The backend API server must be running on port `8000` so that agents can call the database tools:
+```bash
+.\venv\Scripts\python.exe mock_api.py
+```
+
+#### 2. Start the ADK Web UI (Terminal 2)
+In another terminal, start the Web UI. We bind it to port `8080` to avoid conflict with the mock API:
+```bash
+.\venv\Scripts\adk.exe web --port 8080 airline_agent
+```
+Then visit **http://127.0.0.1:8080/** in your browser.
+
+#### 3. Run the ADK CLI Interactive Chat (Terminal 2)
+Alternatively, run the agent in the command line using the ADK CLI:
+```bash
+.\venv\Scripts\adk.exe run airline_agent
+```
+
+---
 
 ## Mock API
 
@@ -111,12 +135,14 @@ The mock API simulates booking data and exposes endpoints such as:
 
 These endpoints are used by the agents to read and update booking information.
 
+---
+
 ## Testing
 
-Run the scenario tests with:
+Run the scenario tests with the virtual environment's Python:
 
 ```bash
-python test_scenarios.py
+.\venv\Scripts\python.exe test_scenarios.py
 ```
 
 The script checks:
@@ -125,8 +151,11 @@ The script checks:
 - flight change workflow
 - FAQ retrieval behavior
 
+---
+
 ## Notes
 
-- The FAQ engine downloads and loads embeddings on first use.
-- The mock backend is started automatically when running `main.py`.
-- The `.env` file is ignored by Git to protect secrets.
+- **Agent Loader Wrapper:** The `airline_agent` directory contains `agent.py` which loads the main `coordinator_agent` from `agents.py`.
+- **API Cache Warnings:** You may see a `Performance Alert` in the ADK UI console when switching agents. This is normal and indicates a Gemini context cache switch; it can be safely ignored.
+- **API Key Quota:** Make sure your `.env` contains a valid `GEMINI_API_KEY`. If you are on the Free Tier, you may hit rate limits (429 Resource Exhausted) if you send many requests consecutively.
+

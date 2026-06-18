@@ -13,7 +13,7 @@ bookings = {
             {
                 "id": "PAX001",
                 "name": "John Doe",
-                "dob": "1990-01-15",
+                "dob": "1985-05-20",
                 "flight": {
                     "number": "AK123",
                     "departure": "KUL",
