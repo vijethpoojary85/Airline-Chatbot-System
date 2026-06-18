@@ -27,7 +27,6 @@ api_process = subprocess.Popen(
     stderr=subprocess.DEVNULL
 )
 
-# Register atexit handler to ensure the mock API server is shut down when the script exits
 def cleanup_api():
     if api_process.poll() is None:
         print("\nStopping Mock API Backend...")
@@ -37,10 +36,8 @@ def cleanup_api():
 
 atexit.register(cleanup_api)
 
-# Wait for FastAPI to start up and bind to port 8000
 time.sleep(2.0)
 
-# Import ADK modules after setting up environment
 from google.adk import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
@@ -49,7 +46,6 @@ from airline_agent.agents import coordinator_agent
 def display_event(event) -> None:
     """Pretty-print runner events to the console."""
     if event.partial:
-        # Skip streaming tokens to keep output clean in terminal
         return
 
     if not event.content or not event.content.parts:
@@ -79,7 +75,6 @@ def main():
     print("="*50)
     print("Type '/exit' to quit the chat session.\n")
 
-    # Initialize the session service and runner
     session_service = InMemorySessionService()
     runner = Runner(
         app_name="airline_assistant",
@@ -101,19 +96,14 @@ def main():
             if user_input.lower() in ("/exit", "exit", "quit"):
                 break
 
-            # Create message payload
             new_message = types.Content(
                 parts=[types.Part.from_text(text=user_input)]
             )
-
-            # Run the agent workflow synchronously
             events = runner.run(
                 user_id=user_id,
                 session_id=session_id,
                 new_message=new_message
             )
-
-            # Consume events and display outputs
             for event in events:
                 display_event(event)
 

@@ -9,7 +9,6 @@ class FAQVectorDB:
         print(f"Loading embedding model: {model_name}...")
         self.model = SentenceTransformer(model_name)
         
-        # Detailed FAQ documents extracted from the official Alliance Air Baggage Policy PDF
         self.documents = [
             "Baggage Allowance: The baggage allowance for economy class passengers is 20kg. You can purchase additional baggage allowance up to 30kg for a fee. Excess baggage charges apply for weight above the allowance.",
             
@@ -67,7 +66,6 @@ class FAQVectorDB:
         # Return corresponding documents
         return [self.documents[idx] for idx in top_k_indices]
 
-# Singleton instance to avoid reloading model on every query
 faq_db = None
 
 def get_faq_db():
