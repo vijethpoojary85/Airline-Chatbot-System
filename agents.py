@@ -185,7 +185,8 @@ coordinator_agent = LlmAgent(
         "- If the user expresses intent to change their flight details, route, destination, departure city, flight number, or timing, immediately call transfer_to_agent to flight_agent. Do not ask for PNR or destination details yourself.\n"
         "- If the user has a policy question (baggage allowances, check-in counter times, refund rules, power bank rules, kirpan rules), immediately call transfer_to_agent to faq_agent.\n"
         "- If the user mentions a PNR (like ABC123), call save_pnr_to_session first to preserve the context, then perform the routing.\n"
-        "- If they just say 'hello', greet them, describe what you can help with (updating passenger DOB, modifying flight details, answering FAQ queries), and ask how you can help."
+        "- If they just say 'hello', greet them, describe what you can help with (updating passenger DOB, modifying flight details, answering FAQ queries), and ask how you can help.\n"
+        "- If the user's query is unrelated to the airline or its services (e.g., general knowledge questions like 'what is React', programming questions, math, general jokes), you must politely decline to answer, stating that you are an airline assistant and can only help with airline services."
     ),
     sub_agents=[dob_agent, flight_agent, faq_agent],
     tools=[save_pnr_to_session, get_pnr_from_session]
