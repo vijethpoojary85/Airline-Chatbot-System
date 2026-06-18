@@ -13,22 +13,6 @@ An AI-powered airline customer support assistant built with Python, FastAPI, and
 
 ---
 
-## System Architecture
-
-```mermaid
-graph TD
-    User([User]) --> Coordinator[Coordinator Agent<br>Router / Entry Point]
-    Coordinator --> DOBAgent[DOB Agent<br>Validation & Update]
-    Coordinator --> FlightAgent[Flight Agent<br>Itinerary Changes]
-    Coordinator --> FAQAgent[FAQ Agent<br>RAG Policy Search]
-    
-    DOBAgent --> MockAPI[FastAPI Backend<br>Mock Database]
-    FlightAgent --> MockAPI
-    FAQAgent --> VectorDB[(FAQ Vector DB<br>SentenceTransformers)]
-```
-
----
-
 ## Project Structure
 
 The project code is organized into a modular, self-contained Python package:
