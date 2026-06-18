@@ -10,6 +10,8 @@ class FAQVectorDB:
         
         # Detailed FAQ documents extracted from the official Alliance Air Baggage Policy PDF
         self.documents = [
+            "Baggage Allowance: The baggage allowance for economy class passengers is 20kg. You can purchase additional baggage allowance up to 30kg for a fee. Excess baggage charges apply for weight above the allowance.",
+            
             "Domestic Check-in Baggage Allowance: Alliance Air domestic flights have a free check-in baggage allowance of 15 Kgs per passenger (except Kullu sectors). Flights between Delhi and Kullu, and Kullu and Chandigarh have a free check-in baggage allowance of 10 Kgs per passenger.",
             
             "International Check-in Baggage Allowance: Alliance Air international flights have a free check-in baggage allowance of 20 Kgs per passenger.",
