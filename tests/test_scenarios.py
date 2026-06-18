@@ -17,7 +17,7 @@ if not api_key:
 # Start Mock API in background
 print("Starting Mock API Backend for testing...")
 api_process = subprocess.Popen(
-    [sys.executable, "mock_api.py"],
+    [sys.executable, os.path.join("airline_agent", "mock_api.py")],
     stdout=subprocess.DEVNULL,
     stderr=subprocess.DEVNULL
 )
@@ -35,11 +35,14 @@ atexit.register(cleanup)
 # Wait for server to bind to port 8000
 time.sleep(2.0)
 
+# Adjust sys.path to find packages in parent directory
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 # Import ADK elements
 from google.adk import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
-from agents import coordinator_agent
+from airline_agent.agents import coordinator_agent
 
 API_BASE = "http://127.0.0.1:8000"
 

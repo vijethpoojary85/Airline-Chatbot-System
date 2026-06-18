@@ -22,7 +22,7 @@ if not api_key:
 # Start the mock API backend server in the background
 print("Starting Mock API Backend...")
 api_process = subprocess.Popen(
-    [sys.executable, "mock_api.py"],
+    [sys.executable, os.path.join("airline_agent", "mock_api.py")],
     stdout=subprocess.DEVNULL,
     stderr=subprocess.DEVNULL
 )
@@ -44,7 +44,7 @@ time.sleep(2.0)
 from google.adk import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
-from agents import coordinator_agent
+from airline_agent.agents import coordinator_agent
 
 def display_event(event) -> None:
     """Pretty-print runner events to the console."""

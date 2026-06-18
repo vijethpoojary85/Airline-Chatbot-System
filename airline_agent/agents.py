@@ -1,7 +1,7 @@
 import requests
 from google.adk.agents.context import Context as ToolContext
 from google.adk.agents import LlmAgent
-from rag_service import get_faq_db
+from .rag_service import get_faq_db
 
 API_BASE = "http://127.0.0.1:8000"
 

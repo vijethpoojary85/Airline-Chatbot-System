@@ -1,4 +1,5 @@
 import numpy as np
+# pyrefly: ignore [missing-import]
 from sentence_transformers import SentenceTransformer
 from typing import List
 

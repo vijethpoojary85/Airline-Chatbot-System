@@ -1,161 +1,122 @@
 # Airline Customer Service Assistant
 
-An AI-powered airline customer support assistant built with Python, FastAPI, and Google ADK. The system routes user requests to specialized agents for:
+An AI-powered airline customer support assistant built with Python, FastAPI, and the Google Agent Development Kit (ADK). The system leverages a multi-agent orchestration pattern to route user requests to specialized sub-agents.
 
-- updating passenger DOB information
-- changing flight details
-- answering airline policy questions
-
-## Overview
-
-The project combines:
-
-- a multi-agent orchestration layer (`agents.py`)
-- a mock backend API (`mock_api.py`)
-- a FAQ retrieval service (`rag_service.py`)
-- a CLI entrypoint (`main.py`)
-- scenario-based tests (`test_scenarios.py`)
-
-## Architecture
-
-The flow is:
-
-1. `main.py` loads environment variables and starts the mock API server.
-2. The chat runner initializes the coordinator agent.
-3. The coordinator routes requests to the correct specialist agent.
-4. Specialist agents use tools to query the API or retrieve policy context.
-5. The FAQ agent uses embeddings to find relevant airline policy text.
-
-## Project Structure
-
-- `main.py` - starts the backend and runs the chat application
-- `agents.py` - defines coordinator, DOB, flight, and FAQ agents
-- `mock_api.py` - FastAPI mock airline booking backend
-- `rag_service.py` - FAQ embedding/search logic
-- `test_scenarios.py` - sample end-to-end scenarios
-- `.env.example` - environment variable template
+---
 
 ## Features
 
-### 1. Coordinator Agent
-The main assistant receives user messages and decides whether the request belongs to:
+- **Multi-Agent Orchestration**: A central Coordinator Agent automatically routes user queries to the correct sub-agent depending on intent.
+- **Booking Management**: Specialized agents update passenger Date of Birth (DOB) and modify flight itineraries (departure, destination, dates, timings, flight numbers).
+- **RAG FAQ Agent**: A custom Retrieval-Augmented Generation agent answers airline policy questions (baggage allowance, check-in timelines, refund rules, restricted items) using vector similarity search.
+- **Graceful Session Context**: Seamlessly retains PNR and passenger identity across sub-agent handoffs.
 
-- DOB update flow
-- flight details update flow
-- baggage/check-in/refund policy questions
+---
 
-### 2. DOB Agent
-Helps users update a booking passenger's date of birth after confirming the booking details.
+## System Architecture
 
-### 3. Flight Agent
-Assists with flight changes, route updates, and timetable-related requests.
-
-### 4. FAQ Agent
-Searches airline policy documents and answers questions about:
-
-- baggage allowance
-- check-in timings
-- refund rules
-
-## Setup
-
-### Prerequisites
-
-- Python 3.10 or higher
-- A valid Gemini API key
-
-### Install dependencies
-
-Use your virtual environment and install the required packages:
-
-```bash
-pip install fastapi uvicorn requests python-dotenv numpy sentence-transformers google-adk google-genai
-```
-
-### Configure environment
-
-Copy the sample environment file and add your API key:
-
-```bash
-copy .env.example .env
-```
-
-Then update `.env` with your real Gemini key:
-
-```env
-GEMINI_API_KEY=your_actual_gemini_api_key_here
-```
-
-## Running the Application
-
-### Option A: Standard Interactive Chat (Terminal)
-Run the application directly using the virtual environment's Python executable. This starts the mock API in the background automatically:
-
-```bash
-.\venv\Scripts\python.exe main.py
+```mermaid
+graph TD
+    User([User]) --> Coordinator[Coordinator Agent<br>Router / Entry Point]
+    Coordinator --> DOBAgent[DOB Agent<br>Validation & Update]
+    Coordinator --> FlightAgent[Flight Agent<br>Itinerary Changes]
+    Coordinator --> FAQAgent[FAQ Agent<br>RAG Policy Search]
+    
+    DOBAgent --> MockAPI[FastAPI Backend<br>Mock Database]
+    FlightAgent --> MockAPI
+    FAQAgent --> VectorDB[(FAQ Vector DB<br>SentenceTransformers)]
 ```
 
 ---
 
-### Option B: Running with Google ADK
+## Project Structure
 
-Since the ADK CLI requires folder names to be valid Python identifiers (no spaces), a wrapper folder `airline_agent` has been created. 
+The project code is organized into a modular, self-contained Python package:
 
-Always run these commands from the **project root directory** and prefix them with the virtual environment path to ensure all dependencies (like `sentence-transformers`) load correctly.
+```text
+Airline Customer Service Assistant/
+│
+├── airline_agent/           # Core application package
+│   ├── .adk/                # Google ADK configuration metadata
+│   ├── __init__.py          # Marks folder as importable Python package
+│   ├── agent.py             # ADK entrypoint module (exports root_agent)
+│   ├── agents.py            # Definitions for coordinator and sub-agents
+│   ├── mock_api.py          # FastAPI mock backend database & API server
+│   └── rag_service.py       # RAG Vector DB and embedding logic (SentenceTransformers)
+│
+├── tests/                   # Dedicated test directory
+│   └── test_scenarios.py    # Automated end-to-end integration tests
+│
+├── .env.example             # Template for local environment variables
+├── .gitignore               # Git exclusions
+├── requirements.txt         # Project dependencies
+├── README.md                # Project documentation
+└── main.py                  # Main orchestration driver (CLI mode)
+```
+
+---
+
+## Setup & Installation
+
+### Prerequisites
+- Python 3.10 or higher
+- A valid **Gemini API Key** (from Google AI Studio)
+
+### 1. Install Dependencies
+Ensure your virtual environment is active, and install the required libraries:
+```bash
+pip install fastapi uvicorn requests python-dotenv numpy sentence-transformers google-adk google-genai
+```
+
+### 2. Configure Environment
+Copy the sample environment file to create a local `.env`:
+```bash
+copy .env.example .env
+```
+Open `.env` and fill in your Gemini API key:
+```env
+GEMINI_API_KEY=your_actual_api_key_here
+```
+
+---
+
+## Running the Application
+
+### Option A: Standard Interactive Chat (All-in-One CLI)
+Run the root driver script. This starts the mock API backend automatically in the background and launches the terminal chat loop:
+```bash
+.\venv\Scripts\python.exe main.py
+```
+To exit, type `/exit` or `quit`.
+
+### Option B: Running with Google ADK Web UI
 
 #### 1. Start the Mock API Backend (Terminal 1)
-The backend API server must be running on port `8000` so that agents can call the database tools:
+The backend API server must be running so that agents can call tools to query/update booking data:
 ```bash
-.\venv\Scripts\python.exe mock_api.py
+.\venv\Scripts\python.exe airline_agent/mock_api.py
 ```
 
 #### 2. Start the ADK Web UI (Terminal 2)
-In another terminal, start the Web UI. We bind it to port `8080` to avoid conflict with the mock API:
+Launch the Google ADK web interface (bound to port `8080` to avoid conflict with the API on port `8000`):
 ```bash
 .\venv\Scripts\adk.exe web --port 8080 airline_agent
 ```
-Then visit **http://127.0.0.1:8080/** in your browser.
+Once started, visit **[http://127.0.0.1:8080/](http://127.0.0.1:8080/)** in your web browser.
 
-#### 3. Run the ADK CLI Interactive Chat (Terminal 2)
-Alternatively, run the agent in the command line using the ADK CLI:
+#### 3. Run interactive chat in terminal via ADK (Terminal 2)
+Alternatively, you can run the agent in the console using the ADK CLI:
 ```bash
 .\venv\Scripts\adk.exe run airline_agent
 ```
 
 ---
 
-## Mock API
-
-The mock API simulates booking data and exposes endpoints such as:
-
-- `GET /api/passenger/{pnr}`
-- `PUT /api/passenger/{pnr}/dob`
-- `PUT /api/flight/{pnr}/details`
-- `GET /api/flight/search`
-
-These endpoints are used by the agents to read and update booking information.
-
----
-
 ## Testing
 
-Run the scenario tests with the virtual environment's Python:
-
+Run the automated integration tests to verify multi-agent flows (DOB update, flight changes, FAQ query retrieval):
 ```bash
-.\venv\Scripts\python.exe test_scenarios.py
+.\venv\Scripts\python.exe tests/test_scenarios.py
 ```
 
-The script checks:
-
-- DOB update workflow
-- flight change workflow
-- FAQ retrieval behavior
-
----
-
-## Notes
-
-- **Agent Loader Wrapper:** The `airline_agent` directory contains `agent.py` which loads the main `coordinator_agent` from `agents.py`.
-- **API Cache Warnings:** You may see a `Performance Alert` in the ADK UI console when switching agents. This is normal and indicates a Gemini context cache switch; it can be safely ignored.
-- **API Key Quota:** Make sure your `.env` contains a valid `GEMINI_API_KEY`. If you are on the Free Tier, you may hit rate limits (429 Resource Exhausted) if you send many requests consecutively.
 
