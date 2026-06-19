@@ -1,0 +1,15 @@
+venv/
+.env
+.git/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.adk/
+.gemini/
+tests/
+Dockerfile
+.dockerignore
+implementation_plan.md
+task.md
+walkthrough.md

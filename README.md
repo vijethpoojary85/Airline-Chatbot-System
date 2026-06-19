@@ -94,6 +94,32 @@ Alternatively, you can run the agent in the console using the ADK CLI:
 .\venv\Scripts\adk.exe run airline_agent
 ```
 
+### Option C: Running with Docker (Zero-Installation Setup)
+
+If you want to run this application on another system without setting up Python, virtual environments, or installing package dependencies, you can run it inside a Docker container.
+
+#### 1. Build the Docker Image
+Navigate to the project directory and build the Docker image:
+```bash
+docker build -t airline-assistant .
+```
+*(This will download Python, install all dependencies, and cache the sentence-transformers model inside the image. Building may take a couple of minutes initially, but container startup is instant.)*
+
+#### 2. Run the Interactive Chat Container
+Since the application runs as an interactive command-line interface, you must run it with interactive terminal flags (`-it`) and pass your `GEMINI_API_KEY`:
+
+**On Windows (Command Prompt / PowerShell):**
+```bash
+docker run -it -e GEMINI_API_KEY="your_actual_gemini_api_key_here" airline-assistant
+```
+
+**On macOS / Linux:**
+```bash
+docker run -it -e GEMINI_API_KEY="your_actual_gemini_api_key_here" airline-assistant
+```
+
+To exit, type `/exit` or `quit` inside the chat interface.
+
 ---
 
 ## Testing
